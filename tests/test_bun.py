@@ -16,5 +16,4 @@ class TestBun:
     @pytest.mark.parametrize("bun_fixture", BunTestData.INVALID_CASES, indirect=True)
     def test_init_accepts_any_parameters(self, bun_fixture):
         """Проверка создания булочки с нестандартными параметрами"""
-        assert bun_fixture  
-        
+        assert bun_fixture

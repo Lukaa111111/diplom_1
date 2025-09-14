@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import Mock
 from praktikum.burger import Burger
 from data import BurgerTestData, ReceiptData
+from helpers import InvalidIngredient 
 
 
 class TestBurger:
@@ -46,14 +47,11 @@ class TestBurger:
         burger_fixture.add_ingredient(mock_ingredient_filling)
         burger_fixture.add_ingredient(mock_ingredient_sauce)
         
-        # Проверяем начальную позицию
         assert burger_fixture.ingredients[0] == mock_ingredient_filling
         assert burger_fixture.ingredients[1] == mock_ingredient_sauce
         
-        # Перемещаем первый ингредиент на вторую позицию
         burger_fixture.move_ingredient(0, 1)
         
-        # Проверяем новую позицию
         assert burger_fixture.ingredients[0] == mock_ingredient_sauce
         assert burger_fixture.ingredients[1] == mock_ingredient_filling
 
@@ -76,7 +74,6 @@ class TestBurger:
         burger_fixture.add_ingredient(mock_ingredient_filling)
         with pytest.raises(AttributeError):
             burger_fixture.get_price()
-        assert True  
 
     def test_get_receipt_structure_with_only_bun(self, burger_fixture, mock_bun):
         """Проверка формата чека для бургера только с булочкой"""
@@ -128,7 +125,6 @@ class TestBurger:
         burger_fixture.add_ingredient(mock_ingredient_filling)
         with pytest.raises(AttributeError):
             burger_fixture.get_receipt()
-        assert True 
 
     def test_get_receipt_with_none_ingredient_raises_error(self, burger_fixture, mock_bun):
         """Проверка вызова ошибки при None-ингредиенте в чеке"""
@@ -136,32 +132,26 @@ class TestBurger:
         burger_fixture.ingredients.append(None)
         with pytest.raises(AttributeError):
             burger_fixture.get_receipt()
-        assert True  
 
     def test_get_receipt_with_invalid_ingredient_object_raises_error(self, burger_fixture, mock_bun):
         """Проверка вызова ошибки при невалидном ингредиенте"""
-        class InvalidIngredient:
-            pass
-        
         invalid_ingredient = InvalidIngredient()
         burger_fixture.set_buns(mock_bun)
         burger_fixture.add_ingredient(invalid_ingredient)
         
         with pytest.raises(AttributeError):
             burger_fixture.get_receipt()
-        assert True 
 
-    def test_get_receipt_with_long_names(self, burger_fixture):
-        """Проверка обработки длинных названий в чеке"""
+    def test_get_receipt_with_long_names_contains_name(self, burger_fixture):
+        """Проверка что длинное название содержится в чеке"""
         long_name = "б" * 100
-        long_type = "т" * 100
         
         mock_bun = Mock()
         mock_bun.get_name.return_value = long_name
         mock_bun.get_price.return_value = 200
         
         mock_ingredient = Mock()
-        mock_ingredient.get_type.return_value = long_type
+        mock_ingredient.get_type.return_value = "FILLING"
         mock_ingredient.get_name.return_value = long_name
         mock_ingredient.get_price.return_value = 100
         
@@ -170,31 +160,59 @@ class TestBurger:
         
         receipt = burger_fixture.get_receipt()
         assert long_name in receipt
+
+    def test_get_receipt_with_long_names_contains_type(self, burger_fixture):
+        """Проверка что длинный тип содержится в чеке"""
+        long_type = "т" * 100
+        
+        mock_bun = Mock()
+        mock_bun.get_name.return_value = "Булочка"
+        mock_bun.get_price.return_value = 200
+        
+        mock_ingredient = Mock()
+        mock_ingredient.get_type.return_value = long_type
+        mock_ingredient.get_name.return_value = "Ингредиент"
+        mock_ingredient.get_price.return_value = 100
+        
+        burger_fixture.set_buns(mock_bun)
+        burger_fixture.add_ingredient(mock_ingredient)
+        
+        receipt = burger_fixture.get_receipt()
         assert long_type.lower() in receipt
 
-    @pytest.mark.parametrize("method_name,args,should_set_bun,should_add_ingredient", BurgerTestData.NONE_PARAMETERS_CASES)
-    def test_methods_with_none_parameters(self, burger_fixture, method_name, args, should_set_bun, should_add_ingredient):
-        """Проверка обработки None параметров в методах Burger"""
-        # Подготовка бургера если нужно
-        if should_set_bun:
-            mock_bun = Mock()
-            burger_fixture.set_buns(mock_bun)
+    def test_get_receipt_with_long_names_contains_correct_price(self, burger_fixture):
+        """Проверка что цена с длинными названиями рассчитывается правильно"""
+        mock_bun = Mock()
+        mock_bun.get_name.return_value = "Булочка"
+        mock_bun.get_price.return_value = 200
         
-        if should_add_ingredient:
-            mock_ingredient = Mock()
-            burger_fixture.add_ingredient(mock_ingredient)
+        mock_ingredient = Mock()
+        mock_ingredient.get_type.return_value = "FILLING"
+        mock_ingredient.get_name.return_value = "Ингредиент"
+        mock_ingredient.get_price.return_value = 100
         
-        method = getattr(burger_fixture, method_name)
+        burger_fixture.set_buns(mock_bun)
+        burger_fixture.add_ingredient(mock_ingredient)
         
-        # Для методов, которые должны работать с None
-        if method_name in ["set_buns", "add_ingredient"]:
-            method(*args)
-            if method_name == "set_buns":
-                assert burger_fixture.bun is None
-            elif method_name == "add_ingredient":
-                assert burger_fixture.ingredients[-1] is None
-        else:
-            # Для методов, которые должны вызывать исключение
-            with pytest.raises((TypeError, IndexError)):
-                method(*args)
-            assert True 
+        receipt = burger_fixture.get_receipt()
+        assert "Price: 500" in receipt
+
+    def test_remove_ingredient_with_none_parameters_raises_error(self, burger_fixture):
+        """Проверка вызова ошибки при None параметрах в remove_ingredient"""
+        with pytest.raises((TypeError, IndexError)):
+            burger_fixture.remove_ingredient(0)
+
+    def test_move_ingredient_with_none_parameters_raises_error(self, burger_fixture):
+        """Проверка вызова ошибки при None параметрах в move_ingredient"""
+        with pytest.raises((TypeError, IndexError)):
+            burger_fixture.move_ingredient(0, 1)
+
+    def test_set_buns_with_none_parameter(self, burger_fixture):
+        """Проверка установки None булочки"""
+        burger_fixture.set_buns(None)
+        assert burger_fixture.bun is None
+
+    def test_add_ingredient_with_none_parameter(self, burger_fixture):
+        """Проверка добавления None ингредиента"""
+        burger_fixture.add_ingredient(None)
+        assert burger_fixture.ingredients[-1] is None

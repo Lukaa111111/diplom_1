@@ -54,15 +54,7 @@ class BurgerTestData:
         (250.55, [50.00], 551.10),                          
         (200, [500, 1500, 500, 150, 250], 3300)             
     ]
-    """Набор тестовых данных для проверки обработки None в Burger"""
-    NONE_PARAMETERS_CASES = [
-    ("set_buns", [None], False, False),                 
-    ("add_ingredient", [None], False, False),          
-    ("remove_ingredient", [None], True, False),        
-    ("move_ingredient", [None, 0], True, True),         
-    ("move_ingredient", [0, None], True, True)         
-]
-
+   
 
 class ReceiptData:
     EXP_ONLY_BUN = (

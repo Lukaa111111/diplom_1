@@ -8,29 +8,33 @@ class TestDatabase:
     def test_buns_values_true(self, database_fixture, index, name, price):
         """Проверка данных булочек в базе"""
         buns = database_fixture.available_buns()
-        assert (buns[index].name == name and buns[index].price == price), (
-            f"Булка с индексом {index} не соответствует ожиданиям. "
-            f"Ожидалось: name='{name}', price={price}. "
-            f"Фактически: name='{buns[index].name}', price={buns[index].price}"
-    )
-        
+        assert buns[index].name == name
+        assert buns[index].price == price
+
     @pytest.mark.parametrize('index, type, name, price', DatabaseData.DATABASE_INGREDS)
     def test_ingredients_values_true(self, database_fixture, index, type, name, price):
         """Проверка данных ингредиентов в базе"""
         ingredient = database_fixture.available_ingredients()
-        assert (ingredient[index].type == type and ingredient[index].name == name and ingredient[index].price == price), (
-            f"Ингредиент с индексом {index} не соответствует ожиданиям. "
-            f"Ожидалось: type='{type}', name='{name}', price={price}. "
-            f"Фактически: type='{ingredient[index].type}', name='{ingredient[index].name}', price={ingredient[index].price}"
-    )       
+        assert ingredient[index].type == type
+        assert ingredient[index].name == name
+        assert ingredient[index].price == price
 
-    def test_available_buns_returns_list(self, database_fixture):
-        """Проверка формата возвращаемых булочек"""
+    def test_available_buns_returns_list_type(self, database_fixture):
+        """Проверка что available_buns возвращает список"""
         buns = database_fixture.available_buns()
-        assert isinstance(buns, list) and len(buns) > 0, "Метод available_ingredients должен возвращать заполненный список"
+        assert isinstance(buns, list)
 
-    def test_available_ingredients_returns_list(self, database_fixture):
-        """Проверка формата возвращаемых ингредиентов"""
+    def test_available_buns_returns_non_empty_list(self, database_fixture):
+        """Проверка что available_buns возвращает непустой список"""
+        buns = database_fixture.available_buns()
+        assert len(buns) > 0
+
+    def test_available_ingredients_returns_list_type(self, database_fixture):
+        """Проверка что available_ingredients возвращает список"""
         ingredients = database_fixture.available_ingredients()
-        assert isinstance(ingredients, list) and len(ingredients) > 0, "Метод available_ingredients должен возвращать заполненный список"
-        
+        assert isinstance(ingredients, list)
+
+    def test_available_ingredients_returns_non_empty_list(self, database_fixture):
+        """Проверка что available_ingredients возвращает непустой список"""
+        ingredients = database_fixture.available_ingredients()
+        assert len(ingredients) > 0

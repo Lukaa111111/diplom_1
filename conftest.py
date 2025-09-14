@@ -3,8 +3,7 @@ from praktikum.bun import Bun
 from praktikum.burger import Burger
 from praktikum.ingredient import Ingredient
 from praktikum.database import Database
-from unittest.mock import Mock
-from data import *
+from helpers import create_mock_ingredient, create_mock_bun 
 
 @pytest.fixture
 def bun_fixture(request):
@@ -36,34 +35,14 @@ def database_fixture():
     database = Database()
     return database
 
-
 @pytest.fixture
 def mock_bun():
-    mock = Mock()
-    mock.name = 'White'
-    mock.price = 200
-    mock.get_name.return_value = 'White'
-    mock.get_price.return_value = 200
-    return mock
+    return create_mock_bun('White', 200)  
 
 @pytest.fixture
 def mock_ingredient_filling():
-    mock = Mock()
-    mock.type = 'FILLING'
-    mock.name = 'dinosaur'
-    mock.price = 200
-    mock.get_type.return_value = 'FILLING'
-    mock.get_name.return_value = 'dinosaur'
-    mock.get_price.return_value = 200
-    return mock
+    return create_mock_ingredient('FILLING', 'dinosaur', 200)  
 
 @pytest.fixture
 def mock_ingredient_sauce():
-    mock = Mock()
-    mock.type = 'SAUCE'
-    mock.name = 'hot sauce'
-    mock.price = 100
-    mock.get_type.return_value = 'SAUCE'
-    mock.get_name.return_value = 'hot sauce'
-    mock.get_price.return_value = 100
-    return mock
+    return create_mock_ingredient('SAUCE', 'hot sauce', 100) 

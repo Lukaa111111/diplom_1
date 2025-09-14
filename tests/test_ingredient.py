@@ -3,7 +3,6 @@ from data import IngredientTestData
 
 class TestIngredient:
 
-
     @pytest.mark.parametrize(
         "ingredient_fixture, expected_type",
         [(case, case[0]) for case in IngredientTestData.COMMON_CASES], indirect=["ingredient_fixture"]
@@ -20,7 +19,6 @@ class TestIngredient:
         """Проверка получения названия ингредиента"""
         assert ingredient_fixture.get_name() == expected_name
 
-
     @pytest.mark.parametrize(
         "ingredient_fixture, expected_price",
         [(case, case[2]) for case in IngredientTestData.COMMON_CASES], indirect=["ingredient_fixture"]
@@ -34,5 +32,4 @@ class TestIngredient:
     )
     def test_init_accepts_any_parameters(self, ingredient_fixture):
         """Проверка создания ингредиента с нестандартными параметрами"""
-        assert ingredient_fixture  
-        
+        assert ingredient_fixture
